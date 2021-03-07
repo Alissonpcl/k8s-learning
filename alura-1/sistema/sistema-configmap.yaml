@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sistema-configmap
+data:
+  #Ao inves do IP do Pod estamos informando o service, assim o proprio K8 fará o service discovery
+  #É possível informar via DNS (nome) ou IP do Service. Aqui estou usando DNS.
+  HOST_DB: svc-db-noticias:3306
+  USER_DB: root
+  PASS_DB: "1234"
+  DATABASE_DB: banco

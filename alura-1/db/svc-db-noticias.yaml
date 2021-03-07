@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-db-noticias
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306 #É a porta por onde este servico podera ser acessado internamente no Cluster
+      #targetPort: 3306 Nao precisa ser informado se for o mesmo do port
+  selector:
+    app: db-noticias
