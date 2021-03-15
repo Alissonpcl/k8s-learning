@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
+  labels:
+    app: nginx-deployment
 spec:
-  replicas: 3
+  replicas: 1
   template: 
     metadata: 
       name: nginx-pod
@@ -18,3 +20,21 @@ spec:
   selector:
     matchLabels:
       app: nginx-pod
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-nginx
+spec:
+  ## O ClusterIP podera ser acessado internamente também por svc-nginx.default.svc onde default e o nome do namespace
+  type: ClusterIP 
+  ports:
+    - port: 80
+  selector:
+    app: nginx-pod
+
+
+#Pode ser testado com o CURL do proprio container do Nginx
+kubectl exec nome_pod -it  -- sh
