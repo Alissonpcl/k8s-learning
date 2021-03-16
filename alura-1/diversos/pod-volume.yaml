@@ -14,9 +14,12 @@ spec:
       volumeMounts:
         - mountPath: /volume-dentro-do-container
           name: primeiro-volume
-  volumes: #Sao independentes de Container, mas dependentes de Pods  
-    - name: primeiro-volume
-      hostPath:
+  # Sao independentes de Container, mas dependentes de Pods, ou seja, se o Pod for excluído, o mapeamento do volume também será,  
+  # mas os arquivos serão mantido, porém não estarão acessíveis por nenhum outro Pod a não ser que um novo mapeamento seja feito
+  # Veja PersistentVolumeClaim para criar uma mapeamento independente de Pods
+  volumes: 
+    - name: primeiro-volume      
+      hostPath: #Poderia ser persistentVolumeClaim
         path: /tmp/primeiro-volume
         # Colocando apenas Directory nao funcionou no Mac
         # Nao foi possivel encontrar onde que fica o diretorio gerado

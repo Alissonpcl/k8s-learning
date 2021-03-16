@@ -36,5 +36,21 @@ spec:
     app: nginx-pod
 
 
-#Pode ser testado com o CURL do proprio container do Nginx
-kubectl exec nome_pod -it  -- sh
+# Pode ser testado com o CURL do proprio container do Nginx
+# kubectl exec nome_pod -it  -- sh
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-nginx-nodeport
+spec:
+  ## O ClusterIP podera ser acessado internamente também por svc-nginx.default.svc onde default e o nome do namespace
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 30000
+  selector:
+    app: nginx-pod
