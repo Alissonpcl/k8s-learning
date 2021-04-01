@@ -17,6 +17,24 @@ spec:
           image: nginx:latest
           ports:
             - containerPort: 80
+          # Liveness Probe e usado para garantir que a aplicacao continua funcionando
+          # Se nao estiver funcionando o Container sera reiniciado
+          livenessProbe:
+            httpGet: # Fará um requisicao GET
+              path: / 
+              port: 80
+            periodSeconds: 3 # Testa a cada 3s
+            failureThreshold: 3 # Quantas vezes deve falhar antes de reiniciar
+            initialDelaySeconds: 10 # Tempo inicial de espera, necessario para que o container esteja pronto
+          # O mesmo que o LivenessProbe porém para garantir que o container já esta pronto
+          # para receber requisições
+          readinessProbe:
+            httpGet: # 
+              path: / 
+              port: 80
+            periodSeconds: 3 
+            failureThreshold: 3 # Após 3 tentativas sem sucesso as requisições serão enviadas mesmo assim
+            initialDelaySeconds: 10
   selector:
     matchLabels:
       app: nginx-pod
