@@ -1,0 +1,20 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # Define que os Pods que estiveram nos criterios acima (scaleTargetRef) serao escalonados horizontalmente
+          # ou seja, um novo Pod sera criado, se a utilizacao chegar a 50% de CPU
+          averageUtilization: 50 

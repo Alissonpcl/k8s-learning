@@ -5,13 +5,25 @@ metadata:
   labels:
     app: nginx-deployment
 spec:
-  replicas: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-pod
   template: 
     metadata: 
       name: nginx-pod
       labels:
         app: nginx-pod
     spec:
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: beta.kubernetes.io/os
+                    operator: NotIn
+                    values:
+                      - windows # Determina que este Deployment só deve rodar em Nodes que nao sao Windows
       containers:
         - name: nginx-container
           image: nginx:latest
@@ -35,9 +47,10 @@ spec:
             periodSeconds: 3 
             failureThreshold: 3 # Após 3 tentativas sem sucesso as requisições serão enviadas mesmo assim
             initialDelaySeconds: 10
-  selector:
-    matchLabels:
-      app: nginx-pod
+          resources: 
+            requests:
+              cpu: 5m # milicores
+              memory: "512Mi" # Mebibyte(1.048576 MBs)
 
 ---
 
@@ -46,10 +59,13 @@ kind: Service
 metadata:
   name: svc-nginx
 spec:
-  ## O ClusterIP podera ser acessado internamente também por svc-nginx.default.svc onde default e o nome do namespace
-  type: ClusterIP 
+  # O ClusterIP podera ser acessado internamente também por svc-nginx.default.svc onde default e o nome do namespace
+  # Colocado aqui apenas para exemplo pois com o NodePort abaixo ja e possivel fazer acesso interno e externo
+  # Distribui as requisicoes entre todos os pods identificados pelo selector utilizando kube-proxy (load balancing)
+  type: ClusterIP
   ports:
-    - port: 80
+    - port: 80 # Porta que os podem utilizam para acessar o service
+      targetPort: 80 # Porta onde o container ira receber as requisicoes
   selector:
     app: nginx-pod
 
@@ -65,10 +81,12 @@ kind: Service
 metadata:
   name: svc-nginx-nodeport
 spec:
-  ## O ClusterIP podera ser acessado internamente também por svc-nginx.default.svc onde default e o nome do namespace
+  # Utilizado para acessar o Pod de fora do Cluster. A porta 30000 do host (node)direciona para a porta 80 do Pod
+  # Cria automaticamente um ClusterIp para controlar o trafego interno
   type: NodePort
   ports:
-    - port: 80
-      nodePort: 30000
+    - port: 8080 # O NodePort sera exposto internamento no cluster nesta porta (pode ser acessado por svc-nginx-nodeport.default.svc:8080)
+      targetPort: 80 # Ira direcionar as requisicoes para esta porta do Container
+      nodePort: 30000 # Ira expor esta porta externamente
   selector:
     app: nginx-pod
