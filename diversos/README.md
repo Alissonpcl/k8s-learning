@@ -2,13 +2,17 @@
 
 ## Where to find each example
 
-### nginx-development
-
-1. SVC - NodePort
-1. SVC - ClusterIP
-1. Probes (Liveness and Readness)
+### nginx-deployment.yaml
 1. Deployment
-1. Affinity
+1. Node Affinity
+1. Probes
+1. ClusterIP
+1. NodePort
+1. Resources
+
+### metrics-server.yaml
+1. Metrics server for Pod Autoscaler
+    1. Used in nginx-hpa.yaml to scale nginx-deployment.yaml
 
 ### nginx-hpa.yaml
 1. HPA - HorizontalPodScaling
